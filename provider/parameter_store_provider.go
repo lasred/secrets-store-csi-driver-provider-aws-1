@@ -84,10 +84,18 @@ func (p *ParameterStoreProvider) GetSecretValues(
 		for _, parm := range rsp.Parameters {
 
 			descriptor := batchDesc[*(parm.Name)]
-			values = append(values, &SecretValue{
-				Value:      []byte(*(parm.Value)),
-				Descriptor: *descriptor,
-			})
+
+			secretValue :=  &SecretValue{
+                                Value:      []byte(*(parm.Value)),
+                                Descriptor: *descriptor,
+                        }
+			values = append(values, secretValue)
+
+			if len(descriptor.JSMEPath) > 0 {
+				jsonSecretParser := JsonSecretParser{secretValue: *secretValue}
+				jsonSecrets,_ := jsonSecretParser.getJsonSecrets(descriptor.JSMEPath)
+				values = append(values, jsonSecrets...)
+			}
 
 			// Update the version in the current version map.
 			curMap[descriptor.GetFileName()] = &v1alpha1.ObjectVersion{

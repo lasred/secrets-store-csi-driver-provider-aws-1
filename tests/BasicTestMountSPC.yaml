@@ -14,6 +14,16 @@ spec:
       key: password
     - objectName: username
       key: username
+  - secretName: secret2
+    type: Opaque
+    data:
+    - objectName: DBPort
+      key: port
+    - objectName: DBPassword
+      key: password
+    - objectName: DBUsername
+      key: username
+
   parameters:
     objects: | 
         - objectName: "ParameterStoreTest1"
@@ -27,3 +37,12 @@ spec:
                objectAlias: password
              - path: .port 
                objectAlias: port
+        - objectName: "SyncMultiple"
+          objectType: "ssmparameter"
+          jsmePath:
+             - path: .username
+               objectAlias: DBUsername
+             - path: .password
+               objectAlias: DBPassword
+             - path: .port
+               objectAlias: DBPort

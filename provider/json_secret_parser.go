@@ -1,12 +1,10 @@
 package provider
 
 import (
-	"k8s.io/klog/v2"
         "github.com/savaki/jq"
-
 )
 
-//Wrapper around SecretValue to parse out individual json fields from secret
+//Wrapper around SecretValue to parse out individual json key value from secret
 type JsonSecretParser struct {
 	secretValue SecretValue
 }
@@ -17,14 +15,8 @@ func (j *JsonSecretParser) getJsonSecrets(jsmePathObjects []JSMEPathObject) (s [
 	//fetch all specified key value apris 
 	for _, jsmePathObject  := range jsmePathObjects {
 		op, _ := jq.Parse(jsmePathObject.Path)
-		
-		secretValueString := string(j.secretValue.Value)
-		klog.Info("json parser processing seecret " + secretValueString)
+
 		jsonSecret, _ := op.Apply(j.secretValue.Value)
-
-		jsonSecretString := string(jsonSecret)
-
-		klog.Info("json secret string is" + jsonSecretString)
 
 		descriptor := SecretDescriptor{
 			ObjectAlias: jsmePathObject.ObjectAlias,
@@ -36,9 +28,6 @@ func (j *JsonSecretParser) getJsonSecrets(jsmePathObjects []JSMEPathObject) (s [
 		}
 		jsonValues = append(jsonValues, &secretValue)
 
-	}
-        for _, jsonValue := range jsonValues {
-		klog.Info("the value is" + string(jsonValue.Value))
 	}
 	return jsonValues, nil
 }
