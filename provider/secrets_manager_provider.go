@@ -57,6 +57,13 @@ func (p *SecretsManagerProvider) GetSecretValues(
 
 		// Fetch the latest version.
 		version, secret, err := p.fetchSecret(ctx, descriptor)
+		if len(descriptor.JSMEPath) > 0 {
+			jsonSecretParser := JsonSecretParser{secretValue: *secret}
+
+			jsonSecrets,_ := jsonSecretParser.getJsonSecrets(descriptor.JSMEPath)
+			values = append(values, jsonSecrets...)
+		}
+
 		if err != nil {
 			return nil, err
 		}
