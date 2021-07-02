@@ -93,7 +93,10 @@ func (p *ParameterStoreProvider) GetSecretValues(
 
 			if len(descriptor.JSMEPath) > 0 {
 				jsonSecretParser := JsonSecretParser{secretValue: *secretValue}
-				jsonSecrets,_ := jsonSecretParser.getJsonSecrets(descriptor.JSMEPath)
+				jsonSecrets, err := jsonSecretParser.getJsonSecrets(descriptor.JSMEPath)
+				if err != nil {
+					return nil, err
+				}
 				values = append(values, jsonSecrets...)
 			}
 
