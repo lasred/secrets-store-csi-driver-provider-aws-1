@@ -172,6 +172,56 @@ func TestConflictingAlias(t *testing.T) {
 	}
 }
 
+func TestConflictingAliasJSME(t *testing.T) { objects :=
+                `
+          - objectName: secret1
+            objectType: ssmparameter
+            objectAlias: aliasOne
+          - objectName: secret2
+            objectType: ssmparameter
+            jsmePath:
+              - path: .username
+                objectAlias: aliasOne`
+
+        _, err := NewSecretDescriptorList(objects)
+        expectedErrorMessage := fmt.Sprintf("Name already in use for objectAlias: %s", "aliasOne")
+
+        if err == nil || err.Error() != expectedErrorMessage {
+                t.Fatalf("Expected error: %s, got error: %v", expectedErrorMessage, err)
+        }
+}
+
+func TestMissingAliasJSME(t *testing.T) { objects :=
+                `
+          - objectName: secret2
+            objectType: ssmparameter
+            jsmePath:
+              - path: .username`
+
+        _, err := NewSecretDescriptorList(objects)
+        expectedErrorMessage := fmt.Sprintf("Object alias must be specified for JSME object")
+
+        if err == nil || err.Error() != expectedErrorMessage {
+                t.Fatalf("Expected error: %s, got error: %v", expectedErrorMessage, err)
+        }
+}
+
+func TestMissingPathJSME(t *testing.T) { objects :=
+                `
+          - objectName: secret2
+            objectType: ssmparameter
+            jsmePath:
+              - objectAlias: aliasOne`
+
+        _, err := NewSecretDescriptorList(objects)
+        expectedErrorMessage := fmt.Sprintf("Path must be specified")
+
+        if err == nil || err.Error() != expectedErrorMessage {
+                t.Fatalf("Expected error: %s, got error: %v", expectedErrorMessage, err)
+        }
+}
+
+
 //test separation/grouping into ssm/secretsmanager with valid parameters
 func TestNewDescriptorList(t *testing.T) {
 	objects := `

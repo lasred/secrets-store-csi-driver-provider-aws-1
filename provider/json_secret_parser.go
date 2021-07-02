@@ -11,7 +11,7 @@ type JsonSecretParser struct {
 	secretValue SecretValue
 }
 
-//parse out and return key value pairs from the secret 
+//parse out and return specified key value pairs from the secret 
 func (j *JsonSecretParser) getJsonSecrets(jsmePathObjects []JSMEPathObject) (s []*SecretValue, e error) {
 	secretValue := j.secretValue.Value
 
