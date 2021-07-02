@@ -142,10 +142,10 @@ func (p *SecretDescriptor) validateSecretDescriptor() error {
 }
 
 
-//Private helper to validate the a Secret Descriptor's JSME
+//Private helper to validate the contents of SecretDescriptor JSME
 
 //This method will ensure each JSME entry has a path and an alias. It will also 
-//ensure each JSME entry's alias does not conflict with any existing object alia//(stored in names)
+//ensure each JSME entry's alias does not conflict with any existing object alias(stored in names)
 func (p *SecretDescriptor) validateJSMEObject(names map[string]bool)(error) {
         if len(p.JSMEPath) == 0 {
                 return nil
@@ -203,9 +203,9 @@ func NewSecretDescriptorList(objectSpec string) (desc map[SecretType][]*SecretDe
 		groups[sType] = append(groups[sType], descriptor)
 
 		err = descriptor.validateJSMEObject(names)
-                if err != nil {
-                        return nil, err
-                }
+		if err != nil {
+ 			return nil, err
+		}
 
 		// Check for duplicate names
 		if names[descriptor.ObjectName] {

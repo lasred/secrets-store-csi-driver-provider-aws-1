@@ -1,17 +1,17 @@
 package provider
 
 import (
-        "github.com/savaki/jq"
+	"github.com/savaki/jq"
 	"encoding/json"
 	"fmt"
 )
 
-//Wrapper around SecretValue to parse out individual json key value from secret
+//Wrapper around SecretValue to parse out individual JSON json key pairs from secret
 type JsonSecretParser struct {
 	secretValue SecretValue
 }
 
-//parse out and return individual jey pair values as SecretValue
+//parse out and return key value pairs from the secret 
 func (j *JsonSecretParser) getJsonSecrets(jsmePathObjects []JSMEPathObject) (s []*SecretValue, e error) {
 	secretValue := j.secretValue.Value
 
@@ -19,6 +19,7 @@ func (j *JsonSecretParser) getJsonSecrets(jsmePathObjects []JSMEPathObject) (s [
 		return nil, fmt.Errorf("Secret with object name: %s does not have parsable JSON content", j.secretValue.Descriptor.ObjectName)
 	}
 	var jsonValues []*SecretValue
+
 	//fetch all specified key value apris 
 	for _, jsmePathObject  := range jsmePathObjects {
 		op, _ := jq.Parse(jsmePathObject.Path)
