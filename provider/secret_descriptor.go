@@ -141,6 +141,36 @@ func (p *SecretDescriptor) validateSecretDescriptor() error {
 	return nil
 }
 
+
+//Private helper to validate the a Secret Descriptor's JSME
+
+//This method will ensure each JSME entry has a path and an alias. It will also 
+//ensure each JSME entry's alias does not conflict with any existing object alia//(stored in names)
+func (p *SecretDescriptor) validateJSMEObject(names map[string]bool)(error) {
+        if len(p.JSMEPath) == 0 {
+                return nil
+        }
+
+        for _, jsmePathObject := range p.JSMEPath {
+                if len (jsmePathObject.Path) == 0 {
+                        return fmt.Errorf("Path must be specified")
+                }
+
+                if len (jsmePathObject.ObjectAlias) == 0 {
+                        return fmt.Errorf("Object alias must be specified for JSME object")
+                }
+
+                if names[jsmePathObject.ObjectAlias] {
+                        return fmt.Errorf("Name already in use for objectAlias: %s", jsmePathObject.ObjectAlias)
+                }
+                
+		names[jsmePathObject.ObjectAlias] = true
+        }
+
+        return nil
+
+}
+
 // Group requested objects by secret type and return a map (keyed by secret type) of slices of requests.
 //
 // This function will parse the objects array specified in the
@@ -171,6 +201,11 @@ func NewSecretDescriptorList(objectSpec string) (desc map[SecretType][]*SecretDe
 		// Group secrets of the same type together to allow batching requests
 		sType := descriptor.GetSecretType()
 		groups[sType] = append(groups[sType], descriptor)
+
+		err = descriptor.validateJSMEObject(names)
+                if err != nil {
+                        return nil, err
+                }
 
 		// Check for duplicate names
 		if names[descriptor.ObjectName] {

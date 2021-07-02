@@ -91,6 +91,7 @@ func (p *ParameterStoreProvider) GetSecretValues(
                         }
 			values = append(values, secretValue)
 
+			//Fetch individual json key value apirs if jsmepath is specified 
 			if len(descriptor.JSMEPath) > 0 {
 				jsonSecretParser := JsonSecretParser{secretValue: *secretValue}
 				jsonSecrets, err := jsonSecretParser.getJsonSecrets(descriptor.JSMEPath)
