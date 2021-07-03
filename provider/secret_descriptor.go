@@ -28,11 +28,11 @@ type SecretDescriptor struct {
 	ObjectType string `json:"objectType"`
 
 	//Optional array to sepcify what json key value pairs to extract from a secret and mount as individual secrets 
-	JSMEPath []JSMEPathObject `json:"jsmePath"`
+	JSMEPath []JSMEPathEntry `json:"jsmePath"`
 }
 
 //An individual json key value pair to mount
-type JSMEPathObject struct { 
+type JSMEPathEntry struct { 
 	//JSME path for key value apir 
 	Path string `json:"path"`
 
@@ -150,21 +150,21 @@ func (p *SecretDescriptor) validateJSMEObject(names map[string]bool)(error) {
         if len(p.JSMEPath) == 0 {
                 return nil
         }
-
-        for _, jsmePathObject := range p.JSMEPath {
-                if len (jsmePathObject.Path) == 0 {
+	
+        for _, jsmePathEntry := range p.JSMEPath {
+                if len (jsmePathEntry.Path) == 0 {
                         return fmt.Errorf("Path must be specified")
                 }
 
-                if len (jsmePathObject.ObjectAlias) == 0 {
+                if len (jsmePathEntry.ObjectAlias) == 0 {
                         return fmt.Errorf("Object alias must be specified for JSME object")
                 }
 
-                if names[jsmePathObject.ObjectAlias] {
-                        return fmt.Errorf("Name already in use for objectAlias: %s", jsmePathObject.ObjectAlias)
+                if names[jsmePathEntry.ObjectAlias] {
+                        return fmt.Errorf("Name already in use for objectAlias: %s", jsmePathEntry.ObjectAlias)
                 }
-                
-		names[jsmePathObject.ObjectAlias] = true
+		
+		names[jsmePathEntry.ObjectAlias] = true
         }
 
         return nil

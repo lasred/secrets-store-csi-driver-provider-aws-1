@@ -12,7 +12,7 @@ type JsonSecretParser struct {
 }
 
 //parse out and return specified key value pairs from the secret 
-func (j *JsonSecretParser) getJsonSecrets(jsmePathObjects []JSMEPathObject) (s []*SecretValue, e error) {
+func (j *JsonSecretParser) getJsonSecrets(jsmePathEntries []JSMEPathEntry) (s []*SecretValue, e error) {
 	secretValue := j.secretValue.Value
 
 	if !json.Valid(secretValue) {
@@ -21,18 +21,18 @@ func (j *JsonSecretParser) getJsonSecrets(jsmePathObjects []JSMEPathObject) (s [
 	var jsonValues []*SecretValue
 
 	//fetch all specified key value apris 
-	for _, jsmePathObject  := range jsmePathObjects {
-		op, _ := jq.Parse(jsmePathObject.Path)
+	for _, jsmePathEntry  := range jsmePathEntries {
+		op, _ := jq.Parse(jsmePathEntry.Path)
 
 		jsonSecret, err := op.Apply(secretValue)
 
 		if err != nil {
 			return nil, fmt.Errorf("JSME Path - %s for object alias - %s does not point to a valid objet",
-				jsmePathObject.Path, jsmePathObject.ObjectAlias)
+				jsmePathEntry.Path, jsmePathEntry.ObjectAlias)
 		}
 
 		descriptor := SecretDescriptor{
-			ObjectAlias: jsmePathObject.ObjectAlias,
+			ObjectAlias: jsmePathEntry.ObjectAlias,
 			ObjectType: j.secretValue.Descriptor.ObjectType,
 		}
 		secretValue := SecretValue{
