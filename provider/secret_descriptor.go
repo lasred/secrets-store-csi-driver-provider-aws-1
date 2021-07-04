@@ -138,19 +138,12 @@ func (p *SecretDescriptor) validateSecretDescriptor() error {
 		return fmt.Errorf("ssm parameters can not specify both objectVersion and objectVersionLabel: %s", p.ObjectName)
 	}
 
-	return nil
-}
 
-
-//Private helper to validate the contents of SecretDescriptor JSME
-
-//This method will ensure each JSME entry has a path and an alias. It will also 
-//ensure each JSME entry's alias does not conflict with any existing object alias(stored in names)
-func (p *SecretDescriptor) validateJSMEObject(names map[string]bool)(error) {
-        if len(p.JSMEPath) == 0 {
+        if len(p.JSMEPath) == 0 { //jsmePath not specified no more checks
                 return nil
         }
-	
+
+	//ensure each jsmePath entry has a path and an objectalias 
         for _, jsmePathEntry := range p.JSMEPath {
                 if len (jsmePathEntry.Path) == 0 {
                         return fmt.Errorf("Path must be specified")
@@ -159,16 +152,9 @@ func (p *SecretDescriptor) validateJSMEObject(names map[string]bool)(error) {
                 if len (jsmePathEntry.ObjectAlias) == 0 {
                         return fmt.Errorf("Object alias must be specified for JSME object")
                 }
-
-                if names[jsmePathEntry.ObjectAlias] {
-                        return fmt.Errorf("Name already in use for objectAlias: %s", jsmePathEntry.ObjectAlias)
-                }
-		
-		names[jsmePathEntry.ObjectAlias] = true
-        }
-
-        return nil
-
+	}
+	
+	return nil
 }
 
 // Group requested objects by secret type and return a map (keyed by secret type) of slices of requests.
@@ -202,26 +188,30 @@ func NewSecretDescriptorList(objectSpec string) (desc map[SecretType][]*SecretDe
 		sType := descriptor.GetSecretType()
 		groups[sType] = append(groups[sType], descriptor)
 
-		err = descriptor.validateJSMEObject(names)
-		if err != nil {
- 			return nil, err
-		}
-
 		// Check for duplicate names
 		if names[descriptor.ObjectName] {
 			return nil, fmt.Errorf("Name already in use for objectName: %s", descriptor.ObjectName)
 		}
 		names[descriptor.ObjectName] = true
 
-		if len(descriptor.ObjectAlias) == 0 { // Alias not used, no more checks.
+		if len(descriptor.ObjectAlias) > 0 {
+			if names[descriptor.ObjectAlias] {
+				return nil, fmt.Errorf("Name already in use for objectAlias: %s", descriptor.ObjectAlias)
+			}
+			names[descriptor.ObjectAlias] = true
+		}
+
+		if len(descriptor.JSMEPath) ==  0 { //jsmePath not used. No more checks
 			continue
 		}
 
-		// Check if the alias conflicts with an existing name
-		if names[descriptor.ObjectAlias] {
-			return nil, fmt.Errorf("Name already in use for objectAlias: %s", descriptor.ObjectAlias)
+                for _, jsmePathEntry := range descriptor.JSMEPath {
+			if names[jsmePathEntry.ObjectAlias] {
+		                 return nil, fmt.Errorf("Name already in use for objectAlias: %s", jsmePathEntry.ObjectAlias)
+			}
+
+	                names[jsmePathEntry.ObjectAlias] = true
 		}
-		names[descriptor.ObjectAlias] = true
 
 	}
 
