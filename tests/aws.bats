@@ -68,9 +68,27 @@ teardown_file() {
     aws secretsmanager delete-secret --secret-id SecretsManagerRotationTest --force-delete-without-recovery --region $REGION
 
     aws ssm delete-parameter --name jsonSsm --region $REGION
-     aws secretsmanager delete-secret --secret-id secretsManagerJson --force-delete-without-recovery --region $REGION
+    aws secretsmanager delete-secret --secret-id secretsManagerJson --force-delete-without-recovery --region $REGION
+}
 
+validate_jsme_mount() {
+    result=$(kubectl --namespace $NAMESPACE exec $POD_NAME -- cat /mnt/secrets-store/$USERNAME_ALIAS)
+    [[ "${result//$'\r'}" == $USERNAME ]]
 
+    result=$(kubectl --namespace $NAMESPACE exec $POD_NAME -- cat /mnt/secrets-store/$PASSWORD_ALIAS)
+    [[ "${result//$'\r'}" == $PASSWORD ]]
+
+    result=$(kubectl --namespace $NAMESPACE exec $POD_NAME -- cat /mnt/secrets-store/$SECRET_FILE_NAME)
+    [[ "${result//$'\r'}" == $SECRET_FILE_CONTENT ]]
+
+    run kubectl get secret --namespace $NAMESPACE $K8_SECRET_NAME
+    [ "$status" -eq 0 ]
+
+    result=$(kubectl --namespace=$NAMESPACE get secret $K8_SECRET_NAME -o jsonpath="{.data.username}" | base64 -d)
+    [[ "$result" == $USERNAME ]]
+    
+    result=$(kubectl --namespace=$NAMESPACE get secret $K8_SECRET_NAME -o jsonpath="{.data.password}" | base64 -d)
+    [[ "$result" == $PASSWORD ]]
 }
  
 @test "Install aws provider" {
@@ -145,39 +163,19 @@ teardown_file() {
 }
 
 @test "CSI inline volume test with pod portability - specify jsmePath for parameter store parameter" {
-    result=$(kubectl --namespace $NAMESPACE exec $POD_NAME -- cat /mnt/secrets-store/ssmUsername)
-    [[ "${result//$'\r'}" == "ParameterStoreUser" ]]
-
-    result=$(kubectl --namespace $NAMESPACE exec $POD_NAME -- cat /mnt/secrets-store/ssmPassword)
-    [[ "${result//$'\r'}" == "PasswordForParameterStore" ]]
-
-    jsonSSM='{"username": "ParameterStoreUser", "password": "PasswordForParameterStore"}'
-
-    # Ensure json secret itself was successfully mounted
-    result=$(kubectl --namespace $NAMESPACE exec $POD_NAME -- cat /mnt/secrets-store/jsonSsm)
-    [[ "${result//$'\r'}" == $jsonSSM ]]
+    jsonSSMContent='{"username": "ParameterStoreUser", "password": "PasswordForParameterStore"}'
+   
+   USERNAME_ALIAS=ssmUsername USERNAME=ParameterStoreUser PASSWORD_ALIAS=ssmPassword PASSWORD=PasswordForParameterStore\
+   SECRET_FILE_NAME=jsonSsm SECRET_FILE_CONTENT=$jsonSSMContent K8_SECRET_NAME=json-ssm  validate_jsme_mount
 }
 
 @test "CSI inline volume test with pod portability - specify jsmePath for Secrets Manager secret" {
-    result=$(kubectl --namespace $NAMESPACE exec $POD_NAME -- cat /mnt/secrets-store/secretsManagerUsername)
-    [[ "${result//$'\r'}" == "SecretsManagerUser" ]]
 
-    result=$(kubectl --namespace $NAMESPACE exec $POD_NAME -- cat /mnt/secrets-store/secretsManagerPassword)
-    [[ "${result//$'\r'}" == "PasswordForSecretsManager" ]]
+    secretsManagerJsonContent='{"username": "SecretsManagerUser", "password": "PasswordForSecretsManager"}'
 
-    jsonSecretsManager='{"username": "SecretsManagerUser", "password": "PasswordForSecretsManager"}'
-
-    result=$(kubectl --namespace $NAMESPACE exec $POD_NAME -- cat /mnt/secrets-store/secretsManagerJson)
-    [[ "${result//$'\r'}" == $jsonSecretsManager ]]
-
-    run kubectl get secret --namespace $NAMESPACE secrets-manager-json
-    [ "$status" -eq 0 ]
-
-    result=$(kubectl --namespace=$NAMESPACE get secret secrets-manager-json -o jsonpath="{.data.username}" | base64 -d)
-    [[ "$result" == "SecretsManagerUser" ]]
-
-    result=$(kubectl --namespace=$NAMESPACE get secret secrets-manager-json -o jsonpath="{.data.password}" | base64 -d)
-    [[ "$result" == "PasswordForSecretsManager" ]]
+    USERNAME_ALIAS=secretsManagerUsername USERNAME=SecretsManagerUser PASSWORD_ALIAS=secretsManagerPassword \
+    PASSWORD=PasswordForSecretsManager SECRET_FILE_NAME=secretsManagerJson SECRET_FILE_CONTENT=$secretsManagerJsonContent 
+    K8_SECRET_NAME=secrets-manager-json validate_jsme_mount     
 }
 
 @test "Sync with Kubernetes Secret" {
