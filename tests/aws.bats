@@ -44,9 +44,15 @@ setup_file() {
  
    aws ssm put-parameter --name ParameterStoreRotationTest --value BeforeRotation --type SecureString --region $REGION
    aws secretsmanager create-secret --name SecretsManagerRotationTest --secret-string BeforeRotation --region $REGION
+
+   aws secretsmanager create-secret --name secretsManagerJson  --secret-string '{"username": "SecretsManagerUser", "password": "PasswordForSecretsManager"}' --region $REGION
+    aws ssm put-parameter --name jsonSsm --value '{"username": "ParameterStoreUser", "password": "PasswordForParameterStore"}' --type SecureString --region $REGION
+
+
 }
  
 teardown_file() { 
+
     eksctl delete cluster \
         --name $CLUSTER_NAME \
         --region $REGION
@@ -60,6 +66,11 @@ teardown_file() {
  
     aws ssm delete-parameter --name ParameterStoreRotationTest --region $REGION
     aws secretsmanager delete-secret --secret-id SecretsManagerRotationTest --force-delete-without-recovery --region $REGION
+
+    aws ssm delete-parameter --name jsonSsm --region $REGION
+     aws secretsmanager delete-secret --secret-id secretsManagerJson --force-delete-without-recovery --region $REGION
+
+
 }
  
 @test "Install aws provider" {
