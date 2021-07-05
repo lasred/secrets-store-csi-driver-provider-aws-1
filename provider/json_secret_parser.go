@@ -25,7 +25,9 @@ func (j *JsonSecretParser) getJsonSecrets(jsmePathEntries []JSMEPathEntry) (s []
 		op, _ := jq.Parse(jsmePathEntry.Path)
 
 		jsonSecret, err := op.Apply(secretValue)
-
+		
+		//trim off surrounding quotes
+		jsonSecret = jsonSecret[1:len(jsonSecret)-1]
 		if err != nil {
 			return nil, fmt.Errorf("JSME Path - %s for object alias - %s does not point to a valid objet",
 				jsmePathEntry.Path, jsmePathEntry.ObjectAlias)
