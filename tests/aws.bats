@@ -153,10 +153,24 @@ teardown_file() {
 
     jsonSSM='{"username": "ParameterStoreUser", "password": "PasswordForParameterStore"}'
 
+    # Ensure json secret itself was successfully mounted
     result=$(kubectl --namespace $NAMESPACE exec $POD_NAME -- cat /mnt/secrets-store/jsonSsm)
     [[ "${result//$'\r'}" == $jsonSSM ]]
 }
- 
+
+@test "CSI inline volume test with pod portability - specify jsmePath for Secrets Manager secret" {
+    result=$(kubectl --namespace $NAMESPACE exec $POD_NAME -- cat /mnt/secrets-store/secretsManagerUsername)
+    [[ "${result//$'\r'}" == "SecretsManagerUser" ]]
+
+    result=$(kubectl --namespace $NAMESPACE exec $POD_NAME -- cat /mnt/secrets-store/secretsManagerPassword)
+    [[ "${result//$'\r'}" == "PasswordForSecretsManager" ]]
+
+    jsonSecretsManager='{"username": "SecretsManagerUser", "password": "PasswordForSecretsManager"}'
+
+    result=$(kubectl --namespace $NAMESPACE exec $POD_NAME -- cat /mnt/secrets-store/secretsManagerJson)
+    [[ "${result//$'\r'}" == $jsonSecretsManager ]]
+}
+
 @test "Sync with Kubernetes Secret" {
     run kubectl get secret --namespace $NAMESPACE  secret
     [ "$status" -eq 0 ]
