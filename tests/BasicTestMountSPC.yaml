@@ -10,14 +10,14 @@ spec:
     data:
     - objectName: SecretsManagerSync
       key: username
-  - secretName: jsonSsm
+  - secretName: json-ssm
     type: Opaque
     data:
     - objectName: ssmUsername
       key: username
     - objectName: ssmPassword
       key: password
-  - secretName: secretsManagerJson
+  - secretName: secrets-manager-json
     type: Opaque
     data:
     - objectName: secretsManagerUsername

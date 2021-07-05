@@ -169,6 +169,15 @@ teardown_file() {
 
     result=$(kubectl --namespace $NAMESPACE exec $POD_NAME -- cat /mnt/secrets-store/secretsManagerJson)
     [[ "${result//$'\r'}" == $jsonSecretsManager ]]
+
+    run kubectl get secret --namespace $NAMESPACE secrets-manager-json
+    [ "$status" -eq 0 ]
+
+    result=$(kubectl --namespace=$NAMESPACE get secret secrets-manager-json -o jsonpath="{.data.username}" | base64 -d)
+    [[ "$result" == "SecretsManagerUser" ]]
+
+    result=$(kubectl --namespace=$NAMESPACE get secret secrets-manager-json -o jsonpath="{.data.password}" | base64 -d)
+    [[ "$result" == "PasswordForSecretsManager" ]]
 }
 
 @test "Sync with Kubernetes Secret" {
