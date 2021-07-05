@@ -143,6 +143,19 @@ teardown_file() {
     result=$(kubectl --namespace $NAMESPACE exec $POD_NAME -- cat /mnt/secrets-store/SecretsManagerTest2)
     [[ "${result//$'\r'}" == "SecretsManagerTest2Value" ]]        
 }
+
+@test "CSI inline volume test with pod portability - specify jsmePath for parameter store parameter" {
+    result=$(kubectl --namespace $NAMESPACE exec $POD_NAME -- cat /mnt/secrets-store/ssmUsername)
+    [[ "${result//$'\r'}" == "ParameterStoreUser" ]]
+
+    result=$(kubectl --namespace $NAMESPACE exec $POD_NAME -- cat /mnt/secrets-store/ssmPassword)
+    [[ "${result//$'\r'}" == "PasswordForParameterStore" ]]
+
+    jsonSSM='{"username": "ParameterStoreUser", "password": "PasswordForParameterStore"}'
+
+    result=$(kubectl --namespace $NAMESPACE exec $POD_NAME -- cat /mnt/secrets-store/jsonSsm)
+    [[ "${result//$'\r'}" == $jsonSSM ]]
+}
  
 @test "Sync with Kubernetes Secret" {
     run kubectl get secret --namespace $NAMESPACE  secret
