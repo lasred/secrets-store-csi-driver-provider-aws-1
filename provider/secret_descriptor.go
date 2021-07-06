@@ -27,16 +27,16 @@ type SecretDescriptor struct {
 	// One of secretsmanager or ssmparameter (not required when using full secrets manager ARN).
 	ObjectType string `json:"objectType"`
 
-	//Optional array to sepcify what json key value pairs to extract from a secret and mount as individual secrets 
+	//Optional array to specify what json key value pairs to extract from a secret and mount as individual secrets 
 	JSMEPath []JSMEPathEntry `json:"jsmePath"`
 }
 
 //An individual json key value pair to mount
 type JSMEPathEntry struct { 
-	//JSME path for key value pair 
+	//JSME path to use for retrieval  
 	Path string `json:"path"`
 
-	// Optional base file name in which to store the secret (use ObjectName if nil).
+	//File name in which to store the secret in.
 	ObjectAlias string `json:"objectAlias"`
 }
 
