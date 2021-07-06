@@ -162,20 +162,28 @@ validate_jsme_mount() {
     [[ "${result//$'\r'}" == "SecretsManagerTest2Value" ]]        
 }
 
-@test "CSI inline volume test with pod portability - specify jsmePath for parameter store parameter" {
+@test "CSI inline volume test with pod portability - specify jsmePath for parameter store parameter with rotation" {
     jsonSSMContent='{"username": "ParameterStoreUser", "password": "PasswordForParameterStore"}'
    
-   USERNAME_ALIAS=ssmUsername USERNAME=ParameterStoreUser PASSWORD_ALIAS=ssmPassword PASSWORD=PasswordForParameterStore\
-   SECRET_FILE_NAME=jsonSsm SECRET_FILE_CONTENT=$jsonSSMContent K8_SECRET_NAME=json-ssm  validate_jsme_mount
+    USERNAME_ALIAS=ssmUsername USERNAME=ParameterStoreUser PASSWORD_ALIAS=ssmPassword PASSWORD=PasswordForParameterStore\
+    SECRET_FILE_NAME=jsonSsm SECRET_FILE_CONTENT=$jsonSSMContent K8_SECRET_NAME=json-ssm  validate_jsme_mount
 }
 
-@test "CSI inline volume test with pod portability - specify jsmePath for Secrets Manager secret" {
+@test "CSI inline volume test with pod portability - specify jsmePath for Secrets Manager secret with rotation" {
 
-    secretsManagerJsonContent='{"username": "SecretsManagerUser", "password": "PasswordForSecretsManager"}'
+    JSON_CONTENT='{"username": "SecretsManagerUser", "password": "PasswordForSecretsManager"}'
 
     USERNAME_ALIAS=secretsManagerUsername USERNAME=SecretsManagerUser PASSWORD_ALIAS=secretsManagerPassword \
-    PASSWORD=PasswordForSecretsManager SECRET_FILE_NAME=secretsManagerJson SECRET_FILE_CONTENT=$secretsManagerJsonContent 
+    PASSWORD=PasswordForSecretsManager SECRET_FILE_NAME=secretsManagerJson SECRET_FILE_CONTENT=$JSON_CONTENT 
     K8_SECRET_NAME=secrets-manager-json validate_jsme_mount     
+
+    UPDATED_JSON_CONTENT='{"username": "SecretsManagerUserUpdated", "password": "PasswordForSecretsManagerUpdated"}'
+    aws secretsmanager put-secret-value --secret-id secretsManagerJson --secret-string "$UPDATED_JSON_CONTENT" --region $REGION
+
+    sleep 20
+    USERNAME_ALIAS=secretsManagerUsername USERNAME=SecretsManagerUserUpdated PASSWORD_ALIAS=secretsManagerPassword \
+    PASSWORD=PasswordForSecretsManagerUpdated SECRET_FILE_NAME=secretsManagerJson SECRET_FILE_CONTENT=$UPDATED_JSON_CONTENT
+    K8_SECRET_NAME=secrets-manager-json validate_jsme_mount
 }
 
 @test "Sync with Kubernetes Secret" {
