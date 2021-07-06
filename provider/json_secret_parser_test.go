@@ -33,3 +33,31 @@ func TestNotValidJson(t *testing.T) {
 	}
 }
 
+func TestJSMEPathPointsToInvalidObject(t *testing.T) {
+
+	jsonContent := `{"username": "ParameterStoreUser", "password": "PasswordForParameterStore"}`
+        descriptor := SecretDescriptor{ObjectName: "test secret"}
+	objectAlias := "test"
+        path := "testpath"
+        jsonSecretValue := SecretValue{
+                Value: []byte(jsonContent),
+                Descriptor: descriptor,
+        }
+
+        jsonSecretParser := JsonSecretParser {secretValue: jsonSecretValue}
+
+        jsmePath := []JSMEPathEntry {
+           JSMEPathEntry {
+                Path: path,
+                ObjectAlias: objectAlias,
+           },
+        }
+
+        expectedErrorMessage := fmt.Sprintf("JSME Path - %s for object alias - %s does not point to a valid objet",path, objectAlias)
+        _, err := jsonSecretParser.getJsonSecrets(jsmePath)
+
+        if err == nil || err.Error() != expectedErrorMessage {
+                t.Fatalf("Expected error: %s, got error: %v", expectedErrorMessage, err)
+        }
+}
+
