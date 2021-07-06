@@ -20,7 +20,7 @@ func (j *JsonSecretParser) getJsonSecrets(jsmePathEntries []JSMEPathEntry) (s []
 	}
 	var jsonValues []*SecretValue
 
-	//fetch all specified key value apris 
+	//fetch all specified key value pairs`
 	for _, jsmePathEntry  := range jsmePathEntries {
 		op, _ := jq.Parse(jsmePathEntry.Path)
 

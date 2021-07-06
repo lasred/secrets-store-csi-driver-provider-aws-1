@@ -163,10 +163,17 @@ validate_jsme_mount() {
 }
 
 @test "CSI inline volume test with pod portability - specify jsmePath for parameter store parameter with rotation" {
-    jsonSSMContent='{"username": "ParameterStoreUser", "password": "PasswordForParameterStore"}'
+    JSON_CONTENT='{"username": "ParameterStoreUser", "password": "PasswordForParameterStore"}'
    
     USERNAME_ALIAS=ssmUsername USERNAME=ParameterStoreUser PASSWORD_ALIAS=ssmPassword PASSWORD=PasswordForParameterStore\
-    SECRET_FILE_NAME=jsonSsm SECRET_FILE_CONTENT=$jsonSSMContent K8_SECRET_NAME=json-ssm  validate_jsme_mount
+    SECRET_FILE_NAME=jsonSsm SECRET_FILE_CONTENT=$JSON_CONTENT K8_SECRET_NAME=json-ssm  validate_jsme_mount
+
+    UPDATED_JSON_CONTENT='{"username": "ParameterStoreUserUpdated", "password": "PasswordForParameterStoreUpdated"}'
+    aws ssm put-parameter --name jsonSsm --value "$UPDATED_JSON_CONTENT" --type SecureString --overwrite --region $REGION
+    
+    sleep 20
+    USERNAME_ALIAS=ssmUsername USERNAME=ParameterStoreUserUpdated PASSWORD_ALIAS=ssmPassword PASSWORD=PasswordForParameterStoreUpdated\
+    SECRET_FILE_NAME=jsonSsm SECRET_FILE_CONTENT=$UPDATED_JSON_CONTENT K8_SECRET_NAME=json-ssm  validate_jsme_mount
 }
 
 @test "CSI inline volume test with pod portability - specify jsmePath for Secrets Manager secret with rotation" {

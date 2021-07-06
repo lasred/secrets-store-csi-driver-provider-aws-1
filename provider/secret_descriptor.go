@@ -33,7 +33,7 @@ type SecretDescriptor struct {
 
 //An individual json key value pair to mount
 type JSMEPathEntry struct { 
-	//JSME path for key value apir 
+	//JSME path for key value pair 
 	Path string `json:"path"`
 
 	// Optional base file name in which to store the secret (use ObjectName if nil).
