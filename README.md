@@ -129,8 +129,7 @@ The objects field of the SecretProviderClass can contain the following sub-field
               jsmePath:
                   - path: .username
                     objectAlias: testUsername
-
-
+    ```
 
 ## Additional Considerations
 
