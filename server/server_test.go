@@ -273,24 +273,35 @@ var mountTests []testCase = []testCase{
 					},
 				},
 			},
-			{"objectName": "TestParm1", "objectType": "ssmparameter"},
+			{
+				"objectName": "TestParm1", 
+				"objectType": "ssmparameter",
+				"jsmePath":  []map[string]string {
+                                        map[string] string {
+                                                "path": ".username",
+                                                "objectAlias": "ssmUsername",
+                                        },
+                                },
+			},
+
 		},
 		ssmRsp: []*ssm.GetParametersOutput{
                         {
                                 Parameters: []*ssm.Parameter{
-                                        &ssm.Parameter{Name: aws.String("TestParm1"), Value: aws.String("parm1"), Version: aws.Int64(1)},
+                                        &ssm.Parameter{Name: aws.String("TestParm1"), Value: aws.String(`{"username": "ParameterStoreUser"}`), Version: aws.Int64(1)},
                                 },
                         },
                 },
                 gsvRsp: []*secretsmanager.GetSecretValueOutput{
-                        {SecretString: aws.String(`{"username": "SecretsManagerUser", "password": "PasswordForSecretsManager"}`), VersionId: aws.String("1")},
+                        {SecretString: aws.String(`{"username": "SecretsManagerUser"}`), VersionId: aws.String("1")},
                 },
                 descRsp: []*secretsmanager.DescribeSecretOutput{},
                 expErr:  "",
                 expSecrets: map[string]string{
-                        "TestSecret1": `{"username": "SecretsManagerUser", "password": "PasswordForSecretsManager"}`,
-                        "TestParm1":   "parm1",
+                        "TestSecret1": `{"username": "SecretsManagerUser"}`,
+                        "TestParm1":   `{"username": "ParameterStoreUser"}`,
 			"username": "SecretsManagerUser",
+			"ssmUsername": "ParameterStoreUser",
                 },
                 perms: "420",
 	},
