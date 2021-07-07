@@ -244,7 +244,7 @@ var mountTests []testCase = []testCase{
 		ssmRsp: []*ssm.GetParametersOutput{
 			{
 				Parameters: []*ssm.Parameter{
-					&ssm.Parameter{Name: aws.String("TestParm1"), Value: aws.String("parm1"), Version: aws.Int64(1)},
+					{Name: aws.String("TestParm1"), Value: aws.String("parm1"), Version: aws.Int64(1)},
 				},
 			},
 		},
@@ -260,50 +260,49 @@ var mountTests []testCase = []testCase{
 		perms: "420",
 	},
 	{ // Mount a json secret
-		testName: "New Mount Json Success",
+		testName:   "New Mount Json Success",
 		attributes: stdAttributes,
 		mountObjs: []map[string]interface{}{
 			{
-				"objectName": "TestSecret1", 
-				"objectType": "secretsmanager", 
-				"jsmePath": []map[string]string {
-				 	map[string] string {
-						"path": ".username", 
+				"objectName": "TestSecret1",
+				"objectType": "secretsmanager",
+				"jsmePath": []map[string]string{
+					{
+						"path":        ".username",
 						"objectAlias": "username",
 					},
 				},
 			},
 			{
-				"objectName": "TestParm1", 
+				"objectName": "TestParm1",
 				"objectType": "ssmparameter",
-				"jsmePath":  []map[string]string {
-                                        map[string] string {
-                                                "path": ".username",
-                                                "objectAlias": "ssmUsername",
-                                        },
-                                },
+				"jsmePath": []map[string]string{
+					{
+						"path":        ".username",
+						"objectAlias": "ssmUsername",
+					},
+				},
 			},
-
 		},
 		ssmRsp: []*ssm.GetParametersOutput{
-                        {
-                                Parameters: []*ssm.Parameter{
-                                        &ssm.Parameter{Name: aws.String("TestParm1"), Value: aws.String(`{"username": "ParameterStoreUser"}`), Version: aws.Int64(1)},
-                                },
-                        },
-                },
-                gsvRsp: []*secretsmanager.GetSecretValueOutput{
-                        {SecretString: aws.String(`{"username": "SecretsManagerUser"}`), VersionId: aws.String("1")},
-                },
-                descRsp: []*secretsmanager.DescribeSecretOutput{},
-                expErr:  "",
-                expSecrets: map[string]string{
-                        "TestSecret1": `{"username": "SecretsManagerUser"}`,
-                        "TestParm1":   `{"username": "ParameterStoreUser"}`,
-			"username": "SecretsManagerUser",
+			{
+				Parameters: []*ssm.Parameter{
+					{Name: aws.String("TestParm1"), Value: aws.String(`{"username": "ParameterStoreUser"}`), Version: aws.Int64(1)},
+				},
+			},
+		},
+		gsvRsp: []*secretsmanager.GetSecretValueOutput{
+			{SecretString: aws.String(`{"username": "SecretsManagerUser"}`), VersionId: aws.String("1")},
+		},
+		descRsp: []*secretsmanager.DescribeSecretOutput{},
+		expErr:  "",
+		expSecrets: map[string]string{
+			"TestSecret1": `{"username": "SecretsManagerUser"}`,
+			"TestParm1":   `{"username": "ParameterStoreUser"}`,
+			"username":    "SecretsManagerUser",
 			"ssmUsername": "ParameterStoreUser",
-                },
-                perms: "420",
+		},
+		perms: "420",
 	},
 	{ // Mount a binary secret
 		testName:   "New Mount Binary Success",
@@ -315,7 +314,7 @@ var mountTests []testCase = []testCase{
 		ssmRsp: []*ssm.GetParametersOutput{
 			{
 				Parameters: []*ssm.Parameter{
-					&ssm.Parameter{Name: aws.String("TestParm1"), Value: aws.String("parm1"), Version: aws.Int64(1)},
+					{Name: aws.String("TestParm1"), Value: aws.String("parm1"), Version: aws.Int64(1)},
 				},
 			},
 		},
@@ -351,21 +350,21 @@ var mountTests []testCase = []testCase{
 		ssmRsp: []*ssm.GetParametersOutput{
 			{
 				Parameters: []*ssm.Parameter{
-					&ssm.Parameter{Name: aws.String("TestParm1"), Value: aws.String("parm1"), Version: aws.Int64(1)},
-					&ssm.Parameter{Name: aws.String("TestParm3"), Value: aws.String("parm3"), Version: aws.Int64(1)}, // Validate out of order.
-					&ssm.Parameter{Name: aws.String("TestParm2"), Value: aws.String("parm2"), Version: aws.Int64(1)},
-					&ssm.Parameter{Name: aws.String("TestParm4"), Value: aws.String("parm4"), Version: aws.Int64(1)},
-					&ssm.Parameter{Name: aws.String("TestParm5"), Value: aws.String("parm5"), Version: aws.Int64(1)},
-					&ssm.Parameter{Name: aws.String("TestParm6"), Value: aws.String("parm6"), Version: aws.Int64(1)},
-					&ssm.Parameter{Name: aws.String("TestParm7"), Value: aws.String("parm7"), Version: aws.Int64(1)},
-					&ssm.Parameter{Name: aws.String("TestParm8"), Value: aws.String("parm8"), Version: aws.Int64(1)},
-					&ssm.Parameter{Name: aws.String("TestParm9"), Value: aws.String("parm9"), Version: aws.Int64(1)},
-					&ssm.Parameter{Name: aws.String("TestParm10"), Value: aws.String("parm10"), Version: aws.Int64(1)},
+					{Name: aws.String("TestParm1"), Value: aws.String("parm1"), Version: aws.Int64(1)},
+					{Name: aws.String("TestParm3"), Value: aws.String("parm3"), Version: aws.Int64(1)}, // Validate out of order.
+					{Name: aws.String("TestParm2"), Value: aws.String("parm2"), Version: aws.Int64(1)},
+					{Name: aws.String("TestParm4"), Value: aws.String("parm4"), Version: aws.Int64(1)},
+					{Name: aws.String("TestParm5"), Value: aws.String("parm5"), Version: aws.Int64(1)},
+					{Name: aws.String("TestParm6"), Value: aws.String("parm6"), Version: aws.Int64(1)},
+					{Name: aws.String("TestParm7"), Value: aws.String("parm7"), Version: aws.Int64(1)},
+					{Name: aws.String("TestParm8"), Value: aws.String("parm8"), Version: aws.Int64(1)},
+					{Name: aws.String("TestParm9"), Value: aws.String("parm9"), Version: aws.Int64(1)},
+					{Name: aws.String("TestParm10"), Value: aws.String("parm10"), Version: aws.Int64(1)},
 				},
 			},
 			{
 				Parameters: []*ssm.Parameter{
-					&ssm.Parameter{Name: aws.String("TestParm11"), Value: aws.String("parm11"), Version: aws.Int64(1)},
+					{Name: aws.String("TestParm11"), Value: aws.String("parm11"), Version: aws.Int64(1)},
 				},
 			},
 		},
@@ -498,7 +497,7 @@ var mountTests []testCase = []testCase{
 		ssmRsp: []*ssm.GetParametersOutput{
 			{
 				Parameters: []*ssm.Parameter{
-					&ssm.Parameter{Name: aws.String("TestParm1"), Value: aws.String("parm1"), Version: aws.Int64(1)},
+					{Name: aws.String("TestParm1"), Value: aws.String("parm1"), Version: aws.Int64(1)},
 				},
 			},
 		},
@@ -541,10 +540,10 @@ var mountTests []testCase = []testCase{
 		ssmRsp: []*ssm.GetParametersOutput{
 			{
 				Parameters: []*ssm.Parameter{
-					&ssm.Parameter{Name: aws.String("TestParm1"), Value: aws.String("parm1"), Version: aws.Int64(1)},
-					&ssm.Parameter{Name: aws.String("FailParm2"), Value: aws.String("parm2"), Version: aws.Int64(1)},
-					&ssm.Parameter{Name: aws.String("TestParm3"), Value: aws.String("parm3"), Version: aws.Int64(1)},
-					&ssm.Parameter{Name: aws.String("FailParm4"), Value: aws.String("parm2"), Version: aws.Int64(1)},
+					{Name: aws.String("TestParm1"), Value: aws.String("parm1"), Version: aws.Int64(1)},
+					{Name: aws.String("FailParm2"), Value: aws.String("parm2"), Version: aws.Int64(1)},
+					{Name: aws.String("TestParm3"), Value: aws.String("parm3"), Version: aws.Int64(1)},
+					{Name: aws.String("FailParm4"), Value: aws.String("parm2"), Version: aws.Int64(1)},
 				},
 			},
 		},
@@ -570,7 +569,7 @@ var mountTests []testCase = []testCase{
 		ssmRsp: []*ssm.GetParametersOutput{
 			{
 				Parameters: []*ssm.Parameter{
-					&ssm.Parameter{Name: aws.String("TestParm1"), Value: aws.String("parm1"), Version: aws.Int64(1)},
+					{Name: aws.String("TestParm1"), Value: aws.String("parm1"), Version: aws.Int64(1)},
 				},
 			},
 		},
@@ -592,7 +591,7 @@ var mountTests []testCase = []testCase{
 		ssmRsp: []*ssm.GetParametersOutput{
 			{
 				Parameters: []*ssm.Parameter{
-					&ssm.Parameter{Name: aws.String("mypath/TestParm1"), Value: aws.String("parm1"), Version: aws.Int64(1)},
+					{Name: aws.String("mypath/TestParm1"), Value: aws.String("parm1"), Version: aws.Int64(1)},
 				},
 			},
 		},
@@ -621,7 +620,7 @@ var mountTests []testCase = []testCase{
 		ssmRsp: []*ssm.GetParametersOutput{
 			{
 				Parameters: []*ssm.Parameter{
-					&ssm.Parameter{Name: aws.String("mypath/TestParm1"), Value: aws.String("parm1"), Version: aws.Int64(1)},
+					{Name: aws.String("mypath/TestParm1"), Value: aws.String("parm1"), Version: aws.Int64(1)},
 				},
 			},
 		},
@@ -729,21 +728,21 @@ var remountTests []testCase = []testCase{
 		ssmRsp: []*ssm.GetParametersOutput{
 			{
 				Parameters: []*ssm.Parameter{
-					&ssm.Parameter{Name: aws.String("TestParm1"), Value: aws.String("parm1 v1"), Version: aws.Int64(1)},
-					&ssm.Parameter{Name: aws.String("TestParm2"), Value: aws.String("parm2 v1"), Version: aws.Int64(1)},
-					&ssm.Parameter{Name: aws.String("TestParm3"), Value: aws.String("parm3 v1"), Version: aws.Int64(1)},
-					&ssm.Parameter{Name: aws.String("TestParm4"), Value: aws.String("parm4 v1"), Version: aws.Int64(1)},
-					&ssm.Parameter{Name: aws.String("TestParm5"), Value: aws.String("parm5 v1"), Version: aws.Int64(1)},
-					&ssm.Parameter{Name: aws.String("TestParm6"), Value: aws.String("parm6 v1"), Version: aws.Int64(1)},
-					&ssm.Parameter{Name: aws.String("TestParm7"), Value: aws.String("parm7 v1"), Version: aws.Int64(1)},
-					&ssm.Parameter{Name: aws.String("TestParm8"), Value: aws.String("parm8 v1"), Version: aws.Int64(1)},
-					&ssm.Parameter{Name: aws.String("TestParm9"), Value: aws.String("parm9 v1"), Version: aws.Int64(1)},
-					&ssm.Parameter{Name: aws.String("TestParm10"), Value: aws.String("parm10 v1"), Version: aws.Int64(1)},
+					{Name: aws.String("TestParm1"), Value: aws.String("parm1 v1"), Version: aws.Int64(1)},
+					{Name: aws.String("TestParm2"), Value: aws.String("parm2 v1"), Version: aws.Int64(1)},
+					{Name: aws.String("TestParm3"), Value: aws.String("parm3 v1"), Version: aws.Int64(1)},
+					{Name: aws.String("TestParm4"), Value: aws.String("parm4 v1"), Version: aws.Int64(1)},
+					{Name: aws.String("TestParm5"), Value: aws.String("parm5 v1"), Version: aws.Int64(1)},
+					{Name: aws.String("TestParm6"), Value: aws.String("parm6 v1"), Version: aws.Int64(1)},
+					{Name: aws.String("TestParm7"), Value: aws.String("parm7 v1"), Version: aws.Int64(1)},
+					{Name: aws.String("TestParm8"), Value: aws.String("parm8 v1"), Version: aws.Int64(1)},
+					{Name: aws.String("TestParm9"), Value: aws.String("parm9 v1"), Version: aws.Int64(1)},
+					{Name: aws.String("TestParm10"), Value: aws.String("parm10 v1"), Version: aws.Int64(1)},
 				},
 			},
 			{
 				Parameters: []*ssm.Parameter{
-					&ssm.Parameter{Name: aws.String("TestParm11"), Value: aws.String("parm11 v1"), Version: aws.Int64(1)},
+					{Name: aws.String("TestParm11"), Value: aws.String("parm11 v1"), Version: aws.Int64(1)},
 				},
 			},
 		},
@@ -796,29 +795,29 @@ var remountTests []testCase = []testCase{
 		ssmRsp: []*ssm.GetParametersOutput{
 			{
 				Parameters: []*ssm.Parameter{
-					&ssm.Parameter{Name: aws.String("TestParm1"), Value: aws.String("parm1 v1"), Version: aws.Int64(1)},
-					&ssm.Parameter{Name: aws.String("TestParm2"), Value: aws.String("parm2 v1"), Version: aws.Int64(1)},
-					&ssm.Parameter{Name: aws.String("TestParm3"), Value: aws.String("parm3 v1"), Version: aws.Int64(1)},
-					&ssm.Parameter{Name: aws.String("TestParm4"), Value: aws.String("parm4 v1"), Version: aws.Int64(1)},
-					&ssm.Parameter{Name: aws.String("TestParm5"), Value: aws.String("parm5 v1"), Version: aws.Int64(1)},
-					&ssm.Parameter{Name: aws.String("TestParm6"), Value: aws.String("parm6 v1"), Version: aws.Int64(1)},
-					&ssm.Parameter{Name: aws.String("TestParm7"), Value: aws.String("parm7 v1"), Version: aws.Int64(1)},
-					&ssm.Parameter{Name: aws.String("TestParm8"), Value: aws.String("parm8 v1"), Version: aws.Int64(1)},
-					&ssm.Parameter{Name: aws.String("TestParm9"), Value: aws.String("parm9 v1"), Version: aws.Int64(1)},
-					&ssm.Parameter{Name: aws.String("TestParm10"), Value: aws.String("parm10 v1"), Version: aws.Int64(1)},
+					{Name: aws.String("TestParm1"), Value: aws.String("parm1 v1"), Version: aws.Int64(1)},
+					{Name: aws.String("TestParm2"), Value: aws.String("parm2 v1"), Version: aws.Int64(1)},
+					{Name: aws.String("TestParm3"), Value: aws.String("parm3 v1"), Version: aws.Int64(1)},
+					{Name: aws.String("TestParm4"), Value: aws.String("parm4 v1"), Version: aws.Int64(1)},
+					{Name: aws.String("TestParm5"), Value: aws.String("parm5 v1"), Version: aws.Int64(1)},
+					{Name: aws.String("TestParm6"), Value: aws.String("parm6 v1"), Version: aws.Int64(1)},
+					{Name: aws.String("TestParm7"), Value: aws.String("parm7 v1"), Version: aws.Int64(1)},
+					{Name: aws.String("TestParm8"), Value: aws.String("parm8 v1"), Version: aws.Int64(1)},
+					{Name: aws.String("TestParm9"), Value: aws.String("parm9 v1"), Version: aws.Int64(1)},
+					{Name: aws.String("TestParm10"), Value: aws.String("parm10 v1"), Version: aws.Int64(1)},
 				},
 			},
 			{
 				Parameters: []*ssm.Parameter{
-					&ssm.Parameter{Name: aws.String("TestParm11"), Value: aws.String("parm11 v1"), Version: aws.Int64(1)},
+					{Name: aws.String("TestParm11"), Value: aws.String("parm11 v1"), Version: aws.Int64(1)},
 				},
 			},
 		},
 		gsvRsp: []*secretsmanager.GetSecretValueOutput{}, // Should be describe only
 		descRsp: []*secretsmanager.DescribeSecretOutput{
-			{VersionIdsToStages: map[string][]*string{"TestSecret1-1": []*string{aws.String("AWSPENDING"), aws.String("AWSCURRENT")}}},
-			{VersionIdsToStages: map[string][]*string{"TestSecret2-1": []*string{aws.String("custom"), aws.String("AWSCURRENT")}}},
-			{VersionIdsToStages: map[string][]*string{"TestSecret3-1": []*string{aws.String("AWSCURRENT")}}},
+			{VersionIdsToStages: map[string][]*string{"TestSecret1-1": {aws.String("AWSPENDING"), aws.String("AWSCURRENT")}}},
+			{VersionIdsToStages: map[string][]*string{"TestSecret2-1": {aws.String("custom"), aws.String("AWSCURRENT")}}},
+			{VersionIdsToStages: map[string][]*string{"TestSecret3-1": {aws.String("AWSCURRENT")}}},
 		},
 		expErr: "",
 		expSecrets: map[string]string{
@@ -863,36 +862,36 @@ var remountTests []testCase = []testCase{
 		ssmRsp: []*ssm.GetParametersOutput{
 			{
 				Parameters: []*ssm.Parameter{
-					&ssm.Parameter{Name: aws.String("TestParm1"), Value: aws.String("parm1 v2"), Version: aws.Int64(2)},
-					&ssm.Parameter{Name: aws.String("TestParm2"), Value: aws.String("parm2 v1"), Version: aws.Int64(1)},
-					&ssm.Parameter{Name: aws.String("TestParm3"), Value: aws.String("parm3 v1"), Version: aws.Int64(1)},
-					&ssm.Parameter{Name: aws.String("TestParm4"), Value: aws.String("parm4 v2"), Version: aws.Int64(2)},
-					&ssm.Parameter{Name: aws.String("TestParm5"), Value: aws.String("parm5 v2"), Version: aws.Int64(2)},
-					&ssm.Parameter{Name: aws.String("TestParm6"), Value: aws.String("parm6 v2"), Version: aws.Int64(2)},
-					&ssm.Parameter{Name: aws.String("TestParm7"), Value: aws.String("parm7 v2"), Version: aws.Int64(2)},
-					&ssm.Parameter{Name: aws.String("TestParm8"), Value: aws.String("parm8 v2"), Version: aws.Int64(2)},
-					&ssm.Parameter{Name: aws.String("TestParm9"), Value: aws.String("parm9 v2"), Version: aws.Int64(2)},
-					&ssm.Parameter{Name: aws.String("TestParm10"), Value: aws.String("parm10 v2"), Version: aws.Int64(2)},
+					{Name: aws.String("TestParm1"), Value: aws.String("parm1 v2"), Version: aws.Int64(2)},
+					{Name: aws.String("TestParm2"), Value: aws.String("parm2 v1"), Version: aws.Int64(1)},
+					{Name: aws.String("TestParm3"), Value: aws.String("parm3 v1"), Version: aws.Int64(1)},
+					{Name: aws.String("TestParm4"), Value: aws.String("parm4 v2"), Version: aws.Int64(2)},
+					{Name: aws.String("TestParm5"), Value: aws.String("parm5 v2"), Version: aws.Int64(2)},
+					{Name: aws.String("TestParm6"), Value: aws.String("parm6 v2"), Version: aws.Int64(2)},
+					{Name: aws.String("TestParm7"), Value: aws.String("parm7 v2"), Version: aws.Int64(2)},
+					{Name: aws.String("TestParm8"), Value: aws.String("parm8 v2"), Version: aws.Int64(2)},
+					{Name: aws.String("TestParm9"), Value: aws.String("parm9 v2"), Version: aws.Int64(2)},
+					{Name: aws.String("TestParm10"), Value: aws.String("parm10 v2"), Version: aws.Int64(2)},
 				},
 			},
 			{
 				Parameters: []*ssm.Parameter{
-					&ssm.Parameter{Name: aws.String("TestParm11"), Value: aws.String("parm11 v2"), Version: aws.Int64(2)},
+					{Name: aws.String("TestParm11"), Value: aws.String("parm11 v2"), Version: aws.Int64(2)},
 				},
 			},
 		},
 		descRsp: []*secretsmanager.DescribeSecretOutput{
 			{VersionIdsToStages: map[string][]*string{
-				"TestSecret1-1": []*string{aws.String("AWSPREVIOUS")},
-				"TestSecret1-2": []*string{aws.String("AWSCURRENT"), aws.String("AWSPENDING")},
+				"TestSecret1-1": {aws.String("AWSPREVIOUS")},
+				"TestSecret1-2": {aws.String("AWSCURRENT"), aws.String("AWSPENDING")},
 			}},
 			{VersionIdsToStages: map[string][]*string{
-				"TestSecret2-1": []*string{aws.String("custom"), aws.String("AWSPREVIOUS")},
-				"TestSecret2-2": []*string{aws.String("AWSCURRENT")},
+				"TestSecret2-1": {aws.String("custom"), aws.String("AWSPREVIOUS")},
+				"TestSecret2-2": {aws.String("AWSCURRENT")},
 			}},
 			{VersionIdsToStages: map[string][]*string{
-				"TestSecret3-1": []*string{aws.String("AWSPREVIOUS")},
-				"TestSecret3-2": []*string{aws.String("AWSCURRENT")},
+				"TestSecret3-1": {aws.String("AWSPREVIOUS")},
+				"TestSecret3-2": {aws.String("AWSCURRENT")},
 			}},
 		}, // Only should retrive TestSecret1
 		gsvRsp: []*secretsmanager.GetSecretValueOutput{
@@ -941,36 +940,36 @@ var remountTests []testCase = []testCase{
 		ssmRsp: []*ssm.GetParametersOutput{
 			{
 				Parameters: []*ssm.Parameter{
-					&ssm.Parameter{Name: aws.String("TestParm1"), Value: aws.String("parm1 v2"), Version: aws.Int64(2)},
-					&ssm.Parameter{Name: aws.String("TestParm2"), Value: aws.String("parm2 v2"), Version: aws.Int64(2)},
-					&ssm.Parameter{Name: aws.String("TestParm3"), Value: aws.String("parm3 v1"), Version: aws.Int64(1)},
-					&ssm.Parameter{Name: aws.String("TestParm4"), Value: aws.String("parm4 v2"), Version: aws.Int64(2)},
-					&ssm.Parameter{Name: aws.String("TestParm5"), Value: aws.String("parm5 v2"), Version: aws.Int64(2)},
-					&ssm.Parameter{Name: aws.String("TestParm6"), Value: aws.String("parm6 v2"), Version: aws.Int64(2)},
-					&ssm.Parameter{Name: aws.String("TestParm7"), Value: aws.String("parm7 v2"), Version: aws.Int64(2)},
-					&ssm.Parameter{Name: aws.String("TestParm8"), Value: aws.String("parm8 v2"), Version: aws.Int64(2)},
-					&ssm.Parameter{Name: aws.String("TestParm9"), Value: aws.String("parm9 v2"), Version: aws.Int64(2)},
-					&ssm.Parameter{Name: aws.String("TestParm10"), Value: aws.String("parm10 v2"), Version: aws.Int64(2)},
+					{Name: aws.String("TestParm1"), Value: aws.String("parm1 v2"), Version: aws.Int64(2)},
+					{Name: aws.String("TestParm2"), Value: aws.String("parm2 v2"), Version: aws.Int64(2)},
+					{Name: aws.String("TestParm3"), Value: aws.String("parm3 v1"), Version: aws.Int64(1)},
+					{Name: aws.String("TestParm4"), Value: aws.String("parm4 v2"), Version: aws.Int64(2)},
+					{Name: aws.String("TestParm5"), Value: aws.String("parm5 v2"), Version: aws.Int64(2)},
+					{Name: aws.String("TestParm6"), Value: aws.String("parm6 v2"), Version: aws.Int64(2)},
+					{Name: aws.String("TestParm7"), Value: aws.String("parm7 v2"), Version: aws.Int64(2)},
+					{Name: aws.String("TestParm8"), Value: aws.String("parm8 v2"), Version: aws.Int64(2)},
+					{Name: aws.String("TestParm9"), Value: aws.String("parm9 v2"), Version: aws.Int64(2)},
+					{Name: aws.String("TestParm10"), Value: aws.String("parm10 v2"), Version: aws.Int64(2)},
 				},
 			},
 			{
 				Parameters: []*ssm.Parameter{
-					&ssm.Parameter{Name: aws.String("TestParm11"), Value: aws.String("parm11 v2"), Version: aws.Int64(2)},
+					{Name: aws.String("TestParm11"), Value: aws.String("parm11 v2"), Version: aws.Int64(2)},
 				},
 			},
 		},
 		descRsp: []*secretsmanager.DescribeSecretOutput{
 			{VersionIdsToStages: map[string][]*string{
-				"TestSecret1-1": []*string{aws.String("AWSPREVIOUS")},
-				"TestSecret1-2": []*string{aws.String("AWSCURRENT"), aws.String("AWSPENDING")},
+				"TestSecret1-1": {aws.String("AWSPREVIOUS")},
+				"TestSecret1-2": {aws.String("AWSCURRENT"), aws.String("AWSPENDING")},
 			}},
 			{VersionIdsToStages: map[string][]*string{
-				"TestSecret2-1": []*string{aws.String("AWSPREVIOUS")},
-				"TestSecret2-2": []*string{aws.String("custom"), aws.String("AWSCURRENT")},
+				"TestSecret2-1": {aws.String("AWSPREVIOUS")},
+				"TestSecret2-2": {aws.String("custom"), aws.String("AWSCURRENT")},
 			}},
 			{VersionIdsToStages: map[string][]*string{
-				"TestSecret3-1": []*string{aws.String("AWSPREVIOUS")},
-				"TestSecret3-2": []*string{aws.String("AWSCURRENT")},
+				"TestSecret3-1": {aws.String("AWSPREVIOUS")},
+				"TestSecret3-2": {aws.String("AWSCURRENT")},
 			}},
 		}, // Only should retrive TestSecret1
 		gsvRsp: []*secretsmanager.GetSecretValueOutput{
@@ -1019,36 +1018,36 @@ var remountTests []testCase = []testCase{
 		ssmRsp: []*ssm.GetParametersOutput{
 			{
 				Parameters: []*ssm.Parameter{
-					&ssm.Parameter{Name: aws.String("TestParm1"), Value: aws.String("parm1 v2"), Version: aws.Int64(2)},
-					&ssm.Parameter{Name: aws.String("TestParm2"), Value: aws.String("parm2 v2"), Version: aws.Int64(2)},
-					&ssm.Parameter{Name: aws.String("TestParm3"), Value: aws.String("parm3 v2"), Version: aws.Int64(2)},
-					&ssm.Parameter{Name: aws.String("TestParm4"), Value: aws.String("parm4 v2"), Version: aws.Int64(2)},
-					&ssm.Parameter{Name: aws.String("TestParm5"), Value: aws.String("parm5 v2"), Version: aws.Int64(2)},
-					&ssm.Parameter{Name: aws.String("TestParm6"), Value: aws.String("parm6 v2"), Version: aws.Int64(2)},
-					&ssm.Parameter{Name: aws.String("TestParm7"), Value: aws.String("parm7 v2"), Version: aws.Int64(2)},
-					&ssm.Parameter{Name: aws.String("TestParm8"), Value: aws.String("parm8 v2"), Version: aws.Int64(2)},
-					&ssm.Parameter{Name: aws.String("TestParm9"), Value: aws.String("parm9 v2"), Version: aws.Int64(2)},
-					&ssm.Parameter{Name: aws.String("TestParm10"), Value: aws.String("parm10 v2"), Version: aws.Int64(2)},
+					{Name: aws.String("TestParm1"), Value: aws.String("parm1 v2"), Version: aws.Int64(2)},
+					{Name: aws.String("TestParm2"), Value: aws.String("parm2 v2"), Version: aws.Int64(2)},
+					{Name: aws.String("TestParm3"), Value: aws.String("parm3 v2"), Version: aws.Int64(2)},
+					{Name: aws.String("TestParm4"), Value: aws.String("parm4 v2"), Version: aws.Int64(2)},
+					{Name: aws.String("TestParm5"), Value: aws.String("parm5 v2"), Version: aws.Int64(2)},
+					{Name: aws.String("TestParm6"), Value: aws.String("parm6 v2"), Version: aws.Int64(2)},
+					{Name: aws.String("TestParm7"), Value: aws.String("parm7 v2"), Version: aws.Int64(2)},
+					{Name: aws.String("TestParm8"), Value: aws.String("parm8 v2"), Version: aws.Int64(2)},
+					{Name: aws.String("TestParm9"), Value: aws.String("parm9 v2"), Version: aws.Int64(2)},
+					{Name: aws.String("TestParm10"), Value: aws.String("parm10 v2"), Version: aws.Int64(2)},
 				},
 			},
 			{
 				Parameters: []*ssm.Parameter{
-					&ssm.Parameter{Name: aws.String("TestParm11"), Value: aws.String("parm11 v2"), Version: aws.Int64(2)},
+					{Name: aws.String("TestParm11"), Value: aws.String("parm11 v2"), Version: aws.Int64(2)},
 				},
 			},
 		},
 		descRsp: []*secretsmanager.DescribeSecretOutput{
 			{VersionIdsToStages: map[string][]*string{
-				"TestSecret1-1": []*string{aws.String("AWSPREVIOUS")},
-				"TestSecret1-2": []*string{aws.String("AWSCURRENT"), aws.String("AWSPENDING")},
+				"TestSecret1-1": {aws.String("AWSPREVIOUS")},
+				"TestSecret1-2": {aws.String("AWSCURRENT"), aws.String("AWSPENDING")},
 			}},
 			{VersionIdsToStages: map[string][]*string{
-				"TestSecret2-1": []*string{aws.String("AWSPREVIOUS")},
-				"TestSecret2-2": []*string{aws.String("custom"), aws.String("AWSCURRENT")},
+				"TestSecret2-1": {aws.String("AWSPREVIOUS")},
+				"TestSecret2-2": {aws.String("custom"), aws.String("AWSCURRENT")},
 			}},
 			{VersionIdsToStages: map[string][]*string{
-				"TestSecret3-1": []*string{aws.String("AWSPREVIOUS")},
-				"TestSecret3-2": []*string{aws.String("AWSCURRENT")},
+				"TestSecret3-1": {aws.String("AWSPREVIOUS")},
+				"TestSecret3-2": {aws.String("AWSCURRENT")},
 			}},
 		}, // Only should retrive TestSecret1
 		gsvRsp: []*secretsmanager.GetSecretValueOutput{

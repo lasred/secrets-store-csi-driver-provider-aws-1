@@ -85,13 +85,13 @@ func (p *ParameterStoreProvider) GetSecretValues(
 
 			descriptor := batchDesc[*(parm.Name)]
 
-			secretValue :=  &SecretValue{
-                                Value:      []byte(*(parm.Value)),
-                                Descriptor: *descriptor,
-                        }
+			secretValue := &SecretValue{
+				Value:      []byte(*(parm.Value)),
+				Descriptor: *descriptor,
+			}
 			values = append(values, secretValue)
 
-			//Fetch individual json key value pairs if jsmepath is specified 
+			//Fetch individual json key value pairs if jsmepath is specified
 			if len(descriptor.JSMEPath) > 0 {
 				jsonSecretParser := JsonSecretParser{secretValue: *secretValue}
 				jsonSecrets, err := jsonSecretParser.getJsonSecrets(descriptor.JSMEPath)

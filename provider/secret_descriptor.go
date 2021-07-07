@@ -27,13 +27,13 @@ type SecretDescriptor struct {
 	// One of secretsmanager or ssmparameter (not required when using full secrets manager ARN).
 	ObjectType string `json:"objectType"`
 
-	//Optional array to specify what json key value pairs to extract from a secret and mount as individual secrets 
+	//Optional array to specify what json key value pairs to extract from a secret and mount as individual secrets
 	JSMEPath []JSMEPathEntry `json:"jsmePath"`
 }
 
 //An individual json key value pair to mount
-type JSMEPathEntry struct { 
-	//JSME path to use for retrieval  
+type JSMEPathEntry struct {
+	//JSME path to use for retrieval
 	Path string `json:"path"`
 
 	//File name in which to store the secret in.
@@ -138,22 +138,21 @@ func (p *SecretDescriptor) validateSecretDescriptor() error {
 		return fmt.Errorf("ssm parameters can not specify both objectVersion and objectVersionLabel: %s", p.ObjectName)
 	}
 
-
-        if len(p.JSMEPath) == 0 { //jsmePath not specified no more checks
-                return nil
-        }
-
-	//ensure each jsmePath entry has a path and an objectalias 
-        for _, jsmePathEntry := range p.JSMEPath {
-                if len (jsmePathEntry.Path) == 0 {
-                        return fmt.Errorf("Path must be specified")
-                }
-
-                if len (jsmePathEntry.ObjectAlias) == 0 {
-                        return fmt.Errorf("Object alias must be specified for JSME object")
-                }
+	if len(p.JSMEPath) == 0 { //jsmePath not specified no more checks
+		return nil
 	}
-	
+
+	//ensure each jsmePath entry has a path and an objectalias
+	for _, jsmePathEntry := range p.JSMEPath {
+		if len(jsmePathEntry.Path) == 0 {
+			return fmt.Errorf("Path must be specified")
+		}
+
+		if len(jsmePathEntry.ObjectAlias) == 0 {
+			return fmt.Errorf("Object alias must be specified for JSME object")
+		}
+	}
+
 	return nil
 }
 
@@ -201,16 +200,16 @@ func NewSecretDescriptorList(objectSpec string) (desc map[SecretType][]*SecretDe
 			names[descriptor.ObjectAlias] = true
 		}
 
-		if len(descriptor.JSMEPath) ==  0 { //jsmePath not used. No more checks
+		if len(descriptor.JSMEPath) == 0 { //jsmePath not used. No more checks
 			continue
 		}
 
-                for _, jsmePathEntry := range descriptor.JSMEPath {
+		for _, jsmePathEntry := range descriptor.JSMEPath {
 			if names[jsmePathEntry.ObjectAlias] {
-		                 return nil, fmt.Errorf("Name already in use for objectAlias: %s", jsmePathEntry.ObjectAlias)
+				return nil, fmt.Errorf("Name already in use for objectAlias: %s", jsmePathEntry.ObjectAlias)
 			}
 
-	                names[jsmePathEntry.ObjectAlias] = true
+			names[jsmePathEntry.ObjectAlias] = true
 		}
 
 	}

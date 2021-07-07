@@ -1,28 +1,27 @@
 package provider
 
 import (
-        "testing"
 	"fmt"
+	"testing"
 )
 
 func TestNotValidJson(t *testing.T) {
 
 	jsonNotValid := "NotValidJson"
-        descriptor := SecretDescriptor{ObjectName:  jsonNotValid}
+	descriptor := SecretDescriptor{ObjectName: jsonNotValid}
 
 	notValidSecretValue := SecretValue{
-		Value: []byte(jsonNotValid),
+		Value:      []byte(jsonNotValid),
 		Descriptor: descriptor,
 	}
 
-	jsonSecretParser := JsonSecretParser {secretValue: notValidSecretValue}
+	jsonSecretParser := JsonSecretParser{secretValue: notValidSecretValue}
 
-	jsmePath := []JSMEPathEntry {
-	   JSMEPathEntry {
-		Path: ".username",
-		ObjectAlias: "test",
-
-	   },
+	jsmePath := []JSMEPathEntry{
+		{
+			Path:        ".username",
+			ObjectAlias: "test",
+		},
 	}
 
 	expectedErrorMessage := fmt.Sprintf("Secret with object name: %s does not have parsable JSON content", jsonNotValid)
@@ -36,28 +35,27 @@ func TestNotValidJson(t *testing.T) {
 func TestJSMEPathPointsToInvalidObject(t *testing.T) {
 
 	jsonContent := `{"username": "ParameterStoreUser", "password": "PasswordForParameterStore"}`
-        descriptor := SecretDescriptor{ObjectName: "test secret"}
+	descriptor := SecretDescriptor{ObjectName: "test secret"}
 	objectAlias := "test"
-        path := "testpath"
-        jsonSecretValue := SecretValue{
-                Value: []byte(jsonContent),
-                Descriptor: descriptor,
-        }
+	path := "testpath"
+	jsonSecretValue := SecretValue{
+		Value:      []byte(jsonContent),
+		Descriptor: descriptor,
+	}
 
-        jsonSecretParser := JsonSecretParser {secretValue: jsonSecretValue}
+	jsonSecretParser := JsonSecretParser{secretValue: jsonSecretValue}
 
-        jsmePath := []JSMEPathEntry {
-           JSMEPathEntry {
-                Path: path,
-                ObjectAlias: objectAlias,
-           },
-        }
+	jsmePath := []JSMEPathEntry{
+		{
+			Path:        path,
+			ObjectAlias: objectAlias,
+		},
+	}
 
-        expectedErrorMessage := fmt.Sprintf("JSME Path - %s for object alias - %s does not point to a valid objet",path, objectAlias)
-        _, err := jsonSecretParser.getJsonSecrets(jsmePath)
+	expectedErrorMessage := fmt.Sprintf("JSME Path - %s for object alias - %s does not point to a valid objet", path, objectAlias)
+	_, err := jsonSecretParser.getJsonSecrets(jsmePath)
 
-        if err == nil || err.Error() != expectedErrorMessage {
-                t.Fatalf("Expected error: %s, got error: %v", expectedErrorMessage, err)
-        }
+	if err == nil || err.Error() != expectedErrorMessage {
+		t.Fatalf("Expected error: %s, got error: %v", expectedErrorMessage, err)
+	}
 }
-
