@@ -165,7 +165,7 @@ func newServerWithMocks(tstData *testCase) *CSIDriverProviderServer {
 type testCase struct {
 	testName   string
 	attributes map[string]string
-	mountObjs  []map[string]string
+	mountObjs  []map[string]interface{}
 	ssmRsp     []*ssm.GetParametersOutput
 	gsvRsp     []*secretsmanager.GetSecretValueOutput
 	descRsp    []*secretsmanager.DescribeSecretOutput
@@ -237,7 +237,7 @@ var mountTests []testCase = []testCase{
 	{ // Vanila success case.
 		testName:   "New Mount Success",
 		attributes: stdAttributes,
-		mountObjs: []map[string]string{
+		mountObjs: []map[string]interface{}{
 			{"objectName": "TestSecret1", "objectType": "secretsmanager"},
 			{"objectName": "TestParm1", "objectType": "ssmparameter"},
 		},
@@ -259,10 +259,35 @@ var mountTests []testCase = []testCase{
 		},
 		perms: "420",
 	},
+	{ // Mount a json secret
+		testName: "New Mount Json Success",
+		attributes: stdAttributes,
+		mountObjs: []map[string]interface{}{
+			{"objectName": "TestSecret1", "objectType": "secretsmanager"},
+			{"objectName": "TestParm1", "objectType": "ssmparameter"},
+		},
+		ssmRsp: []*ssm.GetParametersOutput{
+                        {
+                                Parameters: []*ssm.Parameter{
+                                        &ssm.Parameter{Name: aws.String("TestParm1"), Value: aws.String("parm1"), Version: aws.Int64(1)},
+                                },
+                        },
+                },
+                gsvRsp: []*secretsmanager.GetSecretValueOutput{
+                        {SecretString: aws.String("secret1"), VersionId: aws.String("1")},
+                },
+                descRsp: []*secretsmanager.DescribeSecretOutput{},
+                expErr:  "",
+                expSecrets: map[string]string{
+                        "TestSecret1": "secret1",
+                        "TestParm1":   "parm1",
+                },
+                perms: "420",
+	},
 	{ // Mount a binary secret
 		testName:   "New Mount Binary Success",
 		attributes: stdAttributes,
-		mountObjs: []map[string]string{
+		mountObjs: []map[string]interface{}{
 			{"objectName": "TestSecret1", "objectType": "secretsmanager"},
 			{"objectName": "TestParm1", "objectType": "ssmparameter"},
 		},
@@ -287,7 +312,7 @@ var mountTests []testCase = []testCase{
 	{ // Test multiple SSM batches
 		testName:   "Big Batch Success",
 		attributes: stdAttributes,
-		mountObjs: []map[string]string{
+		mountObjs: []map[string]interface{}{
 			{"objectName": "TestSecret1", "objectType": "secretsmanager"},
 			{"objectName": "BinarySecret1", "objectType": "secretsmanager"},
 			{"objectName": "TestParm1", "objectType": "ssmparameter"},
@@ -352,7 +377,7 @@ var mountTests []testCase = []testCase{
 			"namespace": "fakeNS", "accName": "fakeSvcAcc", "podName": "FailPod",
 			"nodeName": "fakeNode", "region": "", "roleARN": "fakeRole",
 		},
-		mountObjs: []map[string]string{
+		mountObjs: []map[string]interface{}{
 			{"objectName": "TestSecret1", "objectType": "secretsmanager"},
 			{"objectName": "TestParm1", "objectType": "ssmparameter"},
 		},
@@ -369,7 +394,7 @@ var mountTests []testCase = []testCase{
 			"namespace": "fakeNS", "accName": "fakeSvcAcc", "podName": "fakePod",
 			"nodeName": "FailNode", "region": "", "roleARN": "fakeRole",
 		},
-		mountObjs: []map[string]string{
+		mountObjs: []map[string]interface{}{
 			{"objectName": "TestSecret1", "objectType": "secretsmanager"},
 			{"objectName": "TestParm1", "objectType": "ssmparameter"},
 		},
@@ -386,7 +411,7 @@ var mountTests []testCase = []testCase{
 			"namespace": "fakeNS", "accName": "fakeSvcAcc", "podName": "fakePod",
 			"nodeName": "fakeNode", "region": "FailRegion", "roleARN": "fakeRole",
 		},
-		mountObjs: []map[string]string{
+		mountObjs: []map[string]interface{}{
 			{"objectName": "TestSecret1", "objectType": "secretsmanager"},
 			{"objectName": "TestParm1", "objectType": "ssmparameter"},
 		},
@@ -400,7 +425,7 @@ var mountTests []testCase = []testCase{
 	{ // Verify failure if we can not parse the file permissions.
 		testName:   "Fail File Perms",
 		attributes: stdAttributes,
-		mountObjs: []map[string]string{
+		mountObjs: []map[string]interface{}{
 			{"objectName": "TestSecret1", "objectType": "secretsmanager"},
 			{"objectName": "TestParm1", "objectType": "ssmparameter"},
 		},
@@ -417,7 +442,7 @@ var mountTests []testCase = []testCase{
 			"namespace": "fakeNS", "accName": "fakeSvcAcc", "podName": "fakePod",
 			"nodeName": "fakeNode", "region": "", "roleARN": "",
 		},
-		mountObjs: []map[string]string{
+		mountObjs: []map[string]interface{}{
 			{"objectName": "TestSecret1", "objectType": "secretsmanager"},
 			{"objectName": "TestParm1", "objectType": "ssmparameter"},
 		},
@@ -431,7 +456,7 @@ var mountTests []testCase = []testCase{
 	{ // Verify failure when there is an error in the descriptors
 		testName:   "Fail Descriptors",
 		attributes: stdAttributes,
-		mountObjs: []map[string]string{
+		mountObjs: []map[string]interface{}{
 			{"objectName": "TestSecret1", "objectType": "secretsmanager"},
 			{"objectType": "ssmparameter"},
 		},
@@ -445,7 +470,7 @@ var mountTests []testCase = []testCase{
 	{ // Verify failure when we the API call (GetSecretValue) fails
 		testName:   "Fail Fetch Secret",
 		attributes: stdAttributes,
-		mountObjs: []map[string]string{
+		mountObjs: []map[string]interface{}{
 			{"objectName": "TestSecret1", "objectType": "secretsmanager"},
 			{"objectName": "TestParm1", "objectType": "ssmparameter"},
 		},
@@ -467,7 +492,7 @@ var mountTests []testCase = []testCase{
 	{ // Verify failure when we the API call (GetParameters) fails
 		testName:   "Fail Fetch Parm",
 		attributes: stdAttributes,
-		mountObjs: []map[string]string{
+		mountObjs: []map[string]interface{}{
 			{"objectName": "TestSecret1", "objectType": "secretsmanager"},
 			{"objectName": "TestParm1", "objectType": "ssmparameter"},
 		},
@@ -485,7 +510,7 @@ var mountTests []testCase = []testCase{
 	{ // Verify failure when parameters in the batch fails
 		testName:   "Fail Fetch Parms",
 		attributes: stdAttributes,
-		mountObjs: []map[string]string{
+		mountObjs: []map[string]interface{}{
 			{"objectName": "TestSecret1", "objectType": "secretsmanager"},
 			{"objectName": "TestParm1", "objectType": "ssmparameter"},
 			{"objectName": "FailParm2", "objectType": "ssmparameter"},
@@ -517,7 +542,7 @@ var mountTests []testCase = []testCase{
 			"nodeName": "fakeNode", "region": "", "roleARN": "fakeRole",
 			"pathTranslation": "False",
 		},
-		mountObjs: []map[string]string{
+		mountObjs: []map[string]interface{}{
 			{"objectName": "mypath/TestSecret1", "objectType": "secretsmanager"},
 			{"objectName": "TestParm1", "objectType": "ssmparameter"},
 		},
@@ -539,7 +564,7 @@ var mountTests []testCase = []testCase{
 	{ // Verify success when slashes are translated in the path name
 		testName:   "Success With Slash",
 		attributes: stdAttributes,
-		mountObjs: []map[string]string{
+		mountObjs: []map[string]interface{}{
 			{"objectName": "mypath/TestSecret1", "objectType": "secretsmanager"},
 			{"objectName": "mypath/TestParm1", "objectType": "ssmparameter"},
 		},
@@ -568,7 +593,7 @@ var mountTests []testCase = []testCase{
 			"nodeName": "fakeNode", "region": "", "roleARN": "fakeRole",
 			"pathTranslation": "-",
 		},
-		mountObjs: []map[string]string{
+		mountObjs: []map[string]interface{}{
 			{"objectName": "mypath/TestSecret1", "objectType": "secretsmanager"},
 			{"objectName": "mypath/TestParm1", "objectType": "ssmparameter"},
 		},
@@ -597,7 +622,7 @@ var mountTests []testCase = []testCase{
 			"nodeName": "fakeNode", "region": "", "roleARN": "fakeRole",
 			"pathTranslation": "--",
 		},
-		mountObjs: []map[string]string{
+		mountObjs: []map[string]interface{}{
 			{"objectName": "TestSecret1", "objectType": "secretsmanager"},
 			{"objectName": "TestParm1", "objectType": "ssmparameter"},
 		},
@@ -662,7 +687,7 @@ var remountTests []testCase = []testCase{
 	{ // Test multiple SSM batches
 		testName:   "Initial Mount Success",
 		attributes: stdAttributes,
-		mountObjs: []map[string]string{
+		mountObjs: []map[string]interface{}{
 			// Secrets with and without lables and versions
 			{"objectName": "TestSecret1", "objectType": "secretsmanager"},
 			{"objectName": "TestSecret2", "objectType": "secretsmanager", "objectVersionLabel": "custom"},
@@ -729,7 +754,7 @@ var remountTests []testCase = []testCase{
 	{ // Test remount with no changes.
 		testName:   "No Change Success",
 		attributes: stdAttributes,
-		mountObjs: []map[string]string{
+		mountObjs: []map[string]interface{}{
 			// Secrets with and without lables and versions
 			{"objectName": "TestSecret1", "objectType": "secretsmanager"},
 			{"objectName": "TestSecret2", "objectType": "secretsmanager", "objectVersionLabel": "custom"},
@@ -796,7 +821,7 @@ var remountTests []testCase = []testCase{
 	{ // Make sure we see changes unless we use a fixed version
 		testName:   "Rotation1 Success",
 		attributes: stdAttributes,
-		mountObjs: []map[string]string{
+		mountObjs: []map[string]interface{}{
 			// Secrets with and without lables and versions
 			{"objectName": "TestSecret1", "objectType": "secretsmanager"},
 			{"objectName": "TestSecret2", "objectType": "secretsmanager", "objectVersionLabel": "custom"},
@@ -874,7 +899,7 @@ var remountTests []testCase = []testCase{
 	{ // Make sure we see changes when labels are moved
 		testName:   "Move Labels1 Success",
 		attributes: stdAttributes,
-		mountObjs: []map[string]string{
+		mountObjs: []map[string]interface{}{
 			// Secrets with and without lables and versions
 			{"objectName": "TestSecret1", "objectType": "secretsmanager"},
 			{"objectName": "TestSecret2", "objectType": "secretsmanager", "objectVersionLabel": "custom"},
@@ -952,7 +977,7 @@ var remountTests []testCase = []testCase{
 	{ // Make sure we see changes when we change hard coded version in the request
 		testName:   "Move Version Success",
 		attributes: stdAttributes,
-		mountObjs: []map[string]string{
+		mountObjs: []map[string]interface{}{
 			// Secrets with and without lables and versions
 			{"objectName": "TestSecret1", "objectType": "secretsmanager"},
 			{"objectName": "TestSecret2", "objectType": "secretsmanager", "objectVersionLabel": "custom"},
