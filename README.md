@@ -120,7 +120,7 @@ The objects field of the SecretProviderClass can contain the following sub-field
             "password": "testpassword"
         }
   
-This is how you can specify you want both the username and password key-pair value of the json document mounted as individual secrets
+    This is how you can specify you want both the username and password key-pair value of the json document mounted as individual secrets
 
     ```yaml:
         objects: |
