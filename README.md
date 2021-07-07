@@ -132,7 +132,7 @@ The objects field of the SecretProviderClass can contain the following sub-field
                   - path: .password
                     objectAlias: testPassword
     ```
-The jsme field of the object field can contain the following sub-fields:
+The jsmePath field can contain the following sub-fields:
 * path: This required field is the JSME path to use for retrieval
 * objectAlias: This required  field specifies the file name under which the key-value pair secret will be mounted. 
 
