@@ -114,13 +114,13 @@ The objects field of the SecretProviderClass can contain the following sub-field
 * objectVersion: This field is optional, and generally not recommended since updates to the secret require updating this field. For Secrets Manager this is the [VersionId](https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_GetSecretValue.html#API_GetSecretValue_RequestParameters). For SSM Parameter Store, this is the optional [version number](https://docs.aws.amazon.com/systems-manager/latest/userguide/sysman-paramstore-versions.html#reference-parameter-version).
 * objectVersionLabel: This optional fields specifies the alias used for the version. Most applications should not use this field since the most recent version of the secret is used by default. For Secrets Manager this is the [VersionStage](https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_GetSecretValue.html#API_GetSecretValue_RequestParameters). For SSM Parameter Store this is the optional [Parameter Label](https://docs.amazonaws.cn/en_us/systems-manager/latest/userguide/sysman-paramstore-labels.html).
 * jsmePath: This optional field specifies what individual key value pairs to retrieve from a json document secret and mount as individual secrets. E.g.: If a secret "MySecret" has jsonContent 
-    ```yaml:
+    ```shell
         {
             "username": "testuser"
             "password": "testpassword"
         }
-  
-    This is how you can specify you want both the username and password key-pair value of the json document mounted as individual secrets
+     ```
+  This is how you can specify you want both the username and password key pairs of the json document mounted as individual secrets
 
     ```yaml:
         objects: |
