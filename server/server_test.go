@@ -263,7 +263,16 @@ var mountTests []testCase = []testCase{
 		testName: "New Mount Json Success",
 		attributes: stdAttributes,
 		mountObjs: []map[string]interface{}{
-			{"objectName": "TestSecret1", "objectType": "secretsmanager"},
+			{
+				"objectName": "TestSecret1", 
+				"objectType": "secretsmanager", 
+				"jsmePath": []map[string]string {
+				 	map[string] string {
+						"path": ".username", 
+						"objectAlias": "username",
+					},
+				},
+			},
 			{"objectName": "TestParm1", "objectType": "ssmparameter"},
 		},
 		ssmRsp: []*ssm.GetParametersOutput{
@@ -274,13 +283,14 @@ var mountTests []testCase = []testCase{
                         },
                 },
                 gsvRsp: []*secretsmanager.GetSecretValueOutput{
-                        {SecretString: aws.String("secret1"), VersionId: aws.String("1")},
+                        {SecretString: aws.String(`{"username": "SecretsManagerUser", "password": "PasswordForSecretsManager"}`), VersionId: aws.String("1")},
                 },
                 descRsp: []*secretsmanager.DescribeSecretOutput{},
                 expErr:  "",
                 expSecrets: map[string]string{
-                        "TestSecret1": "secret1",
+                        "TestSecret1": `{"username": "SecretsManagerUser", "password": "PasswordForSecretsManager"}`,
                         "TestParm1":   "parm1",
+			"username": "SecretsManagerUser",
                 },
                 perms: "420",
 	},
